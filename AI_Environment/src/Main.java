@@ -15,15 +15,13 @@ public class Main
     {
         Environment environment;
         environment = Environment.createNewInstance(10,10);
-        final int clock = 30;
-        environment.start(clock);
+        final int clock = 40;
+        environment.start();
         for (int i = 0; i < (2*clock); i++) {
-            System.out.println("New Cycle!");
             environment.print();
+            if(environment.checkEmptyGrid()) break;
             Thread.sleep((long) 1000);
         }
     }
-
-
 
 }

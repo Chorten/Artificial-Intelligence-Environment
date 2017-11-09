@@ -57,17 +57,21 @@ public class Herbivore extends Animal implements Runnable {
                 running = false;
             }
             if (this.isDead()) {            //If it is dead, remove object from environment.
-                System.out.println("Herbivore dead");
                 myenv.removeObject(this);
                 running = false;
             } else {
                 this.increaseAge();
-                if (this.isBorn()) addChild(this,myenv);   //If eligible, a child can be born.
+                if(this.isBorn()){
+                    if(this.parentIsAlive()) addChild(this, myenv);
+                }
                 else if (this.isFull()){
                     this.decreaseEnergy();
                     continue;          //If full, then don't eat for one cycle.
                 }
-                else if (findFood(myenv)) this.increaseEnergy();    //If food is found, increase energy.
+                else if (findFood(myenv)){
+                    showtext_food(getLocation().x, getLocation().y);
+                    this.increaseEnergy();    //If food is found, increase energy.
+                }
                 else {          //Else, decrease energy and randomly move to a place.
                     this.decreaseEnergy();
                     myenv.removeObject(this);
@@ -97,7 +101,7 @@ public class Herbivore extends Animal implements Runnable {
         }
     }
 
-    public ImageIcon loadImg() {
+    public final ImageIcon loadImg() {
         int random = (int) (Math.random() * 3);
         switch (random) {
             case 0:
@@ -113,7 +117,7 @@ public class Herbivore extends Animal implements Runnable {
         return img;
     }
 
-    public ImageIcon getImg(){
+    public final ImageIcon getImg(){
         if(img==null)
             img=loadImg();
         return img;
@@ -148,6 +152,14 @@ public class Herbivore extends Animal implements Runnable {
             }
         }
         return null;
+    }
+
+    public void showtext_food(int i, int j){
+        JLabel text = new JLabel(" +1 ");
+        text.setSize(50,50);
+        text.setLocation(i, j);
+        getLabel().setText("");
+        getLabel().setText(Integer.toString(this.getEnergy()));
     }
 
 }

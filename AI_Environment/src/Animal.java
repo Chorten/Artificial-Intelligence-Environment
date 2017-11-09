@@ -9,13 +9,11 @@
 
 import java.awt.*;
 
+
 public class Animal {
     private Point location;
-    private int energy;
+    private int energy = 0;
     private int Age;
-
-    protected boolean death = false;
-    protected boolean birth = false;
 
     final static int NORTH = 0;
     final static int SOUTH = 1;
@@ -24,13 +22,13 @@ public class Animal {
 
     public  Animal(){
         location = new Point();
-        energy = 4;
+        energy = 3;
         Age = 0;
     }
 
     public Animal(int x, int y) {
         location = new Point(x, y);
-        energy = 4;
+        energy = 3;
         Age = 0;
     }
 
@@ -38,9 +36,7 @@ public class Animal {
         return location;
     }
 
-    public void increaseEnergy() {
-        energy = energy + 2;
-    }
+    public void increaseEnergy() {energy = energy + 1; }
 
     public void decreaseEnergy() {
         energy = energy - 1;
@@ -56,18 +52,17 @@ public class Animal {
 
     public boolean isDead() {
         if(Environment.getInstance().map[location.x][location.y] ==null ||Age>=10 || energy < 1){
-            death = true;
-            birth = false;
+            return true;
         }
-        return death;
+        return false;
     }
 
     public boolean isBorn() {
         if (energy >= 8 && Age >= 8) {
             energy -= 5;
-            birth = true;
+            return true;
         }
-        return birth;
+        return false;
     }
 
     public boolean isFull() {
@@ -80,18 +75,18 @@ public class Animal {
         int xl = (int)location.getX();
         int yl = (int)location.getY();
         outermost:
-        for (int i = (xl-1); i <=(xl+1) ; i++) {
-            for (int j = (yl-1); j <=(yl+1); j++) {
-                if(myenv.checkEmpty(i, j)) {
+        for (int i = (xl-1); i <=(xl+1); i++) {
+            for (int j = (yl - 1); j <= (yl + 1); j++) {
+                if (myenv.checkEmpty(i, j)) {
                     if (myenv.map[xl][yl] instanceof Herbivore) {
                         Herbivore child = new Herbivore(i, j);
                         child.createHerbivore(myenv);
-                        child.img= ((Herbivore)obj).getImg();
+                        child.img = ((Herbivore) obj).getImg();
                         break outermost;
                     } else if (myenv.map[xl][yl] instanceof Carnivore) {
                         Carnivore child = new Carnivore();
                         child.createCarnivore(myenv);
-                        child.img= ((Carnivore)obj).getImg();
+                        child.img = ((Carnivore) obj).getImg();
                         break outermost;
                     }
                 }
@@ -106,7 +101,6 @@ public class Animal {
 
         int x = (int) location.getX();
         int y = (int) location.getY();
-
 
         int randomMove = (int) (Math.random() * 4);
 
@@ -162,7 +156,6 @@ public class Animal {
                             myenvironment.removeObject(myenvironment.map[i][j]);
                             location.setLocation(i, j);
                             myenvironment.addObject(this);
-                            System.out.println("eating plant");
                             return true;
                         }
                     } else if (this instanceof Carnivore) {
@@ -171,7 +164,6 @@ public class Animal {
                             myenvironment.removeObject(myenvironment.map[i][j]);
                             location.setLocation(i, j);
                             myenvironment.addObject(this);
-                            System.out.println("eating herbivore");
                             return true;
                         }
                     }
@@ -181,4 +173,9 @@ public class Animal {
         return false;
     }
 
+    public boolean parentIsAlive() {
+        if(Environment.getInstance().map[getLocation().x][getLocation().y]== null)
+            return false;
+        return true;
+    }
 }

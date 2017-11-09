@@ -55,18 +55,22 @@ public class Carnivore extends Animal implements Runnable{
                 running = false;
             }
             if(this.isDead()){
-                System.out.println("Carnivore dead");
                 myenv.removeObject(this);
                 running = false;
             }
             else {
                 this.increaseAge();
-                if(this.isBorn()) addChild(this, myenv);
+                if(this.isBorn()){
+                    if(this.parentIsAlive()) addChild(this, myenv);
+                }
                 else if(this.isFull()) {
                     this.decreaseEnergy();
                     continue;
                 }
-                else if (findFood(myenv)) this.increaseEnergy();
+                else if (findFood(myenv)){
+                    showtext_food(getLocation().x, getLocation().y);
+                    this.increaseEnergy();
+                }
                 else {
                     this.decreaseEnergy();
                     myenv.removeObject(this);
@@ -96,23 +100,23 @@ public class Carnivore extends Animal implements Runnable{
         }
     }
 
-    public ImageIcon loadImg() {
+    public final ImageIcon loadImg() {
         int random = (int) (Math.random() * 3);
         switch (random) {
             case 0:
                 img = new ImageIcon(getClass().getResource("Lion.jpeg"));
-                return img;
+                break;
             case 1:
                 img = new ImageIcon(getClass().getResource("tiger.jpeg"));
-                return img;
+                break;
             case 2:
                 img = new ImageIcon(getClass().getResource("Wolf.jpeg"));
-                return img;
+                break;
         }
         return img;
     }
 
-    public ImageIcon getImg(){
+    public final ImageIcon getImg(){
         if(img==null)
             img= loadImg();
         return img;
@@ -148,6 +152,27 @@ public class Carnivore extends Animal implements Runnable{
         }
         return null;
     }
+
+    public void showtext_food(int i, int j){
+        JLabel text = new JLabel("text");
+        text.setSize(50,50);
+        text.setLocation(i, j);
+        getLabel().setText("");
+        getLabel().setText(Integer.toString(this.getEnergy()));
+    }
+
+    /*public void showtext_death(int i, int j){
+        JLabel text = new JLabel("text");
+        text.setSize(80,80);
+        text.setLocation(i, j);
+        text.setText(" RIP ");
+        getLabel().add(text);
+    }
+
+    public void showtext_born(int i, int j){
+
+    }
+    */
 
 
 }

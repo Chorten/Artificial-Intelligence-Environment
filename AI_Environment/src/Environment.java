@@ -15,7 +15,6 @@ public class Environment extends JFrame
     private final int x;
     private final int y;
     protected Object[][] map;
-    private int clock;
     private JFrame frame;
 
     private static Environment instance;
@@ -26,12 +25,13 @@ public class Environment extends JFrame
         frame.setLayout(new GridLayout(x+1,y));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(700, 700));
-        frame.getContentPane().setBackground(Color.black);
+        frame.getContentPane().setBackground(Color.WHITE);
         frame.setVisible(true);
 
         this.x = x;
         this.y = y;
         map = new Object[x][y];
+
     }
 
     public int getX() { return x; }
@@ -53,9 +53,8 @@ public class Environment extends JFrame
         return instance;
     }
 
-    public void start(int clock)
+    public void start()
     {
-        this.clock = clock;
         initialize();
     }
 
@@ -64,7 +63,7 @@ public class Environment extends JFrame
         Plant plantlist = new Plant();
         plantlist.createPlant(50);
         Herbivore HerbList=new Herbivore();
-        HerbList.createHerbivore(25, getInstance());
+        HerbList.createHerbivore(30, getInstance());
         Carnivore CarnList = new Carnivore();
         CarnList.createCarnivore(25, getInstance());
     }
@@ -110,11 +109,6 @@ public class Environment extends JFrame
 
     public void print() {       //Print environment
         frame.getContentPane().removeAll();         //Clear screen
-        int rand = (int) (Math.random() * 5);
-        if (Plant.P_Growth(clock) == true){
-            Plant createPlant = new Plant();
-            createPlant.createPlant(rand);     //Grow random number of plants
-        }
         ImageIcon img = new ImageIcon(getClass().getResource("Grass.jpeg"));
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -130,26 +124,37 @@ public class Environment extends JFrame
                 }
             }
         }
-        NextItr();
-        clock++;
         frame.validate();   //Validate frame
         frame.repaint();    //Update frame
     }
 
-    public void NextItr(){          //Function for next iteration button
-        JButton Next = new JButton(" Next ");
-        Next.setToolTipText("Next Iteration");
-        frame.add(Next);
-        Next.addActionListener((e)->{
-            try {
-                Thread.sleep((long) (1000));
-            } catch (InterruptedException f) {
-                f.printStackTrace();
+
+    //Check if all animals are dead in the grid
+    public boolean checkEmptyGrid(){
+        boolean check = false;
+        outerloop:
+        for(int i =0; i<x; i++){
+            for (int j=0; j <y; j++){
+                if(map[i][j] ==null || map[i][j] instanceof Plant) continue;
+                else{
+                    check = true;
+                    break outerloop;
+                }
             }
-            frame.getContentPane().removeAll();
-            clock++;
-            print();
-        });
+        }
+
+        // if all animals are dead then ask tø exit
+        if(check == false){
+            int confirmed = JOptionPane.showConfirmDialog(null,
+                    " All Living Beings Are Dead! Do you want to exit? ", "Exit Program Message Box",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirmed == JOptionPane.YES_OPTION) {
+                frame.dispose();
+                return true;
+            }
+        }
+        return false;
     }
+
 
 }
